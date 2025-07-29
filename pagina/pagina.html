@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Reserva de Mesas</title>
+  <link rel="stylesheet" href="pagina.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<header>
+  <div class="container header-container">
+    <div class="logo">
+      <img src="mesa1.jpg" alt="reserva Logo" />
+    </div>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="#" class="active">Inicio</a></li>
+        <li><a href="#">Menú</a></li>
+        <li><a href="#">Ofertas</a></li>
+        <li><a href="#">Reservas</a></li>
+        <li><a href="#">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="header-actions">
+      <button class="btn-register">Registrarse</button>
+      <button class="btn-login">Iniciar Sesión</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="container hero-content">
+      <div class="hero-text">
+        <h1>Disfruta de nuestros ricos platillos</h1>
+        <p>Haz tu reserva en uno de nuestros restaurantes</p>
+        <button class="btn-primary">Reserva Ahora</button>
+      </div>
+      <div class="hero-image">
+        <img src="mesas.jpg" alt="mesas" />
+      </div>
+    </div>
+  </section>
+
+  <section class="restaurants">
+    <div class="container">
+      <h2>Nuestros Restaurantes</h2>
+      <div class="restaurant-grid">
+        <article class="restaurant-card">
+          <img src="pizza.jpg" alt="Restaurante Pizza" />
+          <h3>Restaurante Pizza</h3>
+          <button class="btn-secondary">Reservar</button>
+        </article>
+        <article class="restaurant-card">
+          <img src="corviche.jpg" alt="Restaurante corviche" />
+          <h3>Restaurante Corviche</h3>
+          <button class="btn-secondary">Reservar</button>
+        </article>
+        <article class="restaurant-card">
+          <img src="salchipapas.jpeg" alt="Restaurante salchipapas" />
+          <h3>Restaurante Salchipapas</h3>
+          <button class="btn-secondary">Reservar</button>
+        </article>
+        <article class="restaurant-card">
+          <img src="hamburguesa.jpeg" alt="Restaurante Hamburguesa" />
+          <h3>Restaurante Hamburguesa</h3>
+          <button class="btn-secondary">Reservar</button>
+        </article>
+        <article class="restaurant-card">
+          <img src="encebollado.jpeg" alt="Restaurante Encebollado" />
+          <h3>Restaurante Encebollado</h3>
+          <button class="btn-secondary">Reservar</button>
+        </article>
+        <article class="restaurant-card">
+          <img src="mesa4.jpg" alt="Restaurante Shuzi" />
+          <h3>Restaurante Shuzi</h3>
+          <button class="btn-secondary">Reservar</button>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenedor donde se cargan dinámicamente las secciones como Menú, Ofertas, etc. -->
+  <section class="dynamic-content" style="padding: 40px 20px;"></section>
+
+  <!-- Reseñas con Vue -->
+  <section id="app" class="container" style="padding: 30px;">
+    <div v-if="!enviado">
+      <h2>Deja tu reseña</h2>
+      <input type="text" v-model="nombre" placeholder="Tu nombre" /><br/><br/>
+      <textarea v-model="mensaje" placeholder="Tu reseña" rows="4"></textarea><br/><br/>
+      <label>Tu puntuación:</label><br/>
+      <div style="font-size: 24px;">
+        <span
+          v-for="n in 5"
+          :key="n"
+          @click="puntuacion = n"
+          style="cursor: pointer; color: gold;"
+        >
+          {{ n <= puntuacion ? '★' : '☆' }}
+        </span>
+      </div><br/>
+      <button @click="enviarFormulario" style="background:#cc2228;color:#fff;padding:10px 25px;border:none;border-radius:30px;">Enviar reseña</button>
+    </div>
+
+    <div v-else>
+      <h3>¡Gracias por tu reseña, {{ nombre }}!</h3>
+      <p><strong>Tu reseña:</strong> {{ mensaje }}</p>
+      <p><strong>Tu puntuación:</strong>
+        <span style="font-size: 22px; color: gold;">
+          <span v-for="n in 5" :key="n">
+            {{ n <= puntuacion ? '★' : '☆' }}
+          </span>
+        </span>
+      </p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container footer-container">
+    <p>© 2025 Reservade Mesas Ecuador - Come rico con nosotros</p>
+  </div>
+</footer>
+
+<!-- Script funcional de la lógica JS -->
+<script src="pagina.js"></script>
+
+<!-- Vue para reseñas -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script type="module">
+  const { createApp, ref } = Vue;
+
+  createApp({
+    setup() {
+      const nombre = ref("");
+      const mensaje = ref("");
+      const puntuacion = ref(0);
+      const enviado = ref(false);
+
+      const enviarFormulario = () => {
+        if (!nombre.value || !mensaje.value || puntuacion.value === 0) {
+          alert("Por favor completa todos los campos y selecciona una puntuación.");
+          return;
+        }
+        alert("Mensaje enviado. ¡Gracias por contactarnos!");
+        enviado.value = true;
+      };
+
+      return {
+        nombre,
+        mensaje,
+        puntuacion,
+        enviado,
+        enviarFormulario
+      };
+    }
+  }).mount("#app");
+
+  // Guardar datos en localStorage
+  document.addEventListener("submit", (e) => {
+    const form = e.target;
+
+    if (form.id === "registerForm") {
+      const name = form.querySelector("#regName").value.trim();
+      const email = form.querySelector("#regEmail").value.trim();
+      const password = form.querySelector("#regPassword").value;
+
+      const usuarios = JSON.parse(localStorage.getItem("usuarios")) || [];
+      usuarios.push({ nombre: name, email, password });
+      localStorage.setItem("usuarios", JSON.stringify(usuarios));
+
+    } else if (form.id === "reservationForm") {
+      const restaurante = form.querySelector("#resRestaurant").value;
+      const name = form.querySelector("#resName").value.trim();
+      const email = form.querySelector("#resEmail").value.trim();
+      const date = form.querySelector("#resDate").value;
+      const time = form.querySelector("#resTime").value;
+
+      const reservas = JSON.parse(localStorage.getItem("reservas")) || [];
+      reservas.push({ restaurante, name, email, date, time });
+      localStorage.setItem("reservas", JSON.stringify(reservas));
+    }
+  });
+
+  // Simulación API externa
+  axios.get("https://jsonplaceholder.typicode.com/users")
+    .then(res => {
+      console.log("Usuarios desde API simulada:", res.data);
+    })
+    .catch(err => {
+      console.error("Error al obtener datos externos:", err);
+    });
+</script>
+
+</body>
+</html>
